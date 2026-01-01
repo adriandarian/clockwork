@@ -46,9 +46,21 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
     _saveSettings();
   }
   
+  /// Set sound enabled
+  void setSoundEnabled(bool enabled) {
+    state = state.copyWith(soundEnabled: enabled);
+    _saveSettings();
+  }
+  
   /// Toggle haptic feedback
   void toggleHaptics() {
     state = state.copyWith(hapticFeedback: !state.hapticFeedback);
+    _saveSettings();
+  }
+  
+  /// Set haptic feedback
+  void setHapticFeedback(bool enabled) {
+    state = state.copyWith(hapticFeedback: enabled);
     _saveSettings();
   }
   
