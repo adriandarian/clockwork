@@ -13,6 +13,7 @@ Welcome to the Clockwork documentation. This folder contains comprehensive docum
 | [PRESET_SYSTEM.md](PRESET_SYSTEM.md) | How presets work, timer behaviors, and examples |
 | [ROADMAP.md](ROADMAP.md) | Development phases, milestones, and backlog |
 | [UI_UX_GUIDELINES.md](UI_UX_GUIDELINES.md) | Design principles, layouts, and interaction patterns |
+| [UX_REDESIGN.md](UX_REDESIGN.md) | **NEW** - Comprehensive UX redesign plan with folders, settings, batch ops |
 | [DEVELOPMENT.md](DEVELOPMENT.md) | Development setup, running on iOS/macOS, troubleshooting |
 
 ---

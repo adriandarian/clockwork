@@ -29,6 +29,16 @@ mixin _$Preset {
   /// Optional description
   String? get description => throw _privateConstructorUsedError;
 
+  /// Folder ID for organization (null = uncategorized)
+  String? get folderId => throw _privateConstructorUsedError;
+
+  /// Custom emoji icon
+  String? get iconEmoji => throw _privateConstructorUsedError;
+
+  /// Accent color for the preset card
+  @ColorConverter()
+  Color? get color => throw _privateConstructorUsedError;
+
   /// Category for organization
   PresetCategory get category => throw _privateConstructorUsedError;
 
@@ -50,6 +60,15 @@ mixin _$Preset {
   /// Delay before time starts ticking
   Duration? get delay => throw _privateConstructorUsedError;
 
+  /// Byo-yomi periods count
+  int get byoyomiPeriods => throw _privateConstructorUsedError;
+
+  /// Byo-yomi time per period
+  Duration? get byoyomiTime => throw _privateConstructorUsedError;
+
+  /// Canadian byo-yomi: moves required per period
+  int get canadianMoves => throw _privateConstructorUsedError;
+
   /// Timeout behavior
   TimeoutBehavior get timeoutBehavior => throw _privateConstructorUsedError;
 
@@ -65,6 +84,18 @@ mixin _$Preset {
   /// Tags for search
   List<String> get tags => throw _privateConstructorUsedError;
 
+  /// Manual sort order within folder
+  int get sortOrder => throw _privateConstructorUsedError;
+
+  /// Creation timestamp (milliseconds since epoch)
+  int? get createdAt => throw _privateConstructorUsedError;
+
+  /// Last used timestamp (milliseconds since epoch)
+  int? get lastUsedAt => throw _privateConstructorUsedError;
+
+  /// Number of times this preset was used
+  int get useCount => throw _privateConstructorUsedError;
+
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   $PresetCopyWith<Preset> get copyWith => throw _privateConstructorUsedError;
@@ -79,6 +110,9 @@ abstract class $PresetCopyWith<$Res> {
       {String id,
       String name,
       String? description,
+      String? folderId,
+      String? iconEmoji,
+      @ColorConverter() Color? color,
       PresetCategory category,
       int playerCount,
       TimerType timerType,
@@ -86,11 +120,18 @@ abstract class $PresetCopyWith<$Res> {
       Duration? moveTime,
       Duration? increment,
       Duration? delay,
+      int byoyomiPeriods,
+      Duration? byoyomiTime,
+      int canadianMoves,
       TimeoutBehavior timeoutBehavior,
       TurnOrder turnOrder,
       bool isBuiltIn,
       bool isFavorite,
-      List<String> tags});
+      List<String> tags,
+      int sortOrder,
+      int? createdAt,
+      int? lastUsedAt,
+      int useCount});
 }
 
 /// @nodoc
@@ -109,6 +150,9 @@ class _$PresetCopyWithImpl<$Res, $Val extends Preset>
     Object? id = null,
     Object? name = null,
     Object? description = freezed,
+    Object? folderId = freezed,
+    Object? iconEmoji = freezed,
+    Object? color = freezed,
     Object? category = null,
     Object? playerCount = null,
     Object? timerType = null,
@@ -116,11 +160,18 @@ class _$PresetCopyWithImpl<$Res, $Val extends Preset>
     Object? moveTime = freezed,
     Object? increment = freezed,
     Object? delay = freezed,
+    Object? byoyomiPeriods = null,
+    Object? byoyomiTime = freezed,
+    Object? canadianMoves = null,
     Object? timeoutBehavior = null,
     Object? turnOrder = null,
     Object? isBuiltIn = null,
     Object? isFavorite = null,
     Object? tags = null,
+    Object? sortOrder = null,
+    Object? createdAt = freezed,
+    Object? lastUsedAt = freezed,
+    Object? useCount = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -135,6 +186,18 @@ class _$PresetCopyWithImpl<$Res, $Val extends Preset>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String?,
+      folderId: freezed == folderId
+          ? _value.folderId
+          : folderId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      iconEmoji: freezed == iconEmoji
+          ? _value.iconEmoji
+          : iconEmoji // ignore: cast_nullable_to_non_nullable
+              as String?,
+      color: freezed == color
+          ? _value.color
+          : color // ignore: cast_nullable_to_non_nullable
+              as Color?,
       category: null == category
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
@@ -163,6 +226,18 @@ class _$PresetCopyWithImpl<$Res, $Val extends Preset>
           ? _value.delay
           : delay // ignore: cast_nullable_to_non_nullable
               as Duration?,
+      byoyomiPeriods: null == byoyomiPeriods
+          ? _value.byoyomiPeriods
+          : byoyomiPeriods // ignore: cast_nullable_to_non_nullable
+              as int,
+      byoyomiTime: freezed == byoyomiTime
+          ? _value.byoyomiTime
+          : byoyomiTime // ignore: cast_nullable_to_non_nullable
+              as Duration?,
+      canadianMoves: null == canadianMoves
+          ? _value.canadianMoves
+          : canadianMoves // ignore: cast_nullable_to_non_nullable
+              as int,
       timeoutBehavior: null == timeoutBehavior
           ? _value.timeoutBehavior
           : timeoutBehavior // ignore: cast_nullable_to_non_nullable
@@ -183,6 +258,22 @@ class _$PresetCopyWithImpl<$Res, $Val extends Preset>
           ? _value.tags
           : tags // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      sortOrder: null == sortOrder
+          ? _value.sortOrder
+          : sortOrder // ignore: cast_nullable_to_non_nullable
+              as int,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as int?,
+      lastUsedAt: freezed == lastUsedAt
+          ? _value.lastUsedAt
+          : lastUsedAt // ignore: cast_nullable_to_non_nullable
+              as int?,
+      useCount: null == useCount
+          ? _value.useCount
+          : useCount // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 }
@@ -198,6 +289,9 @@ abstract class _$$PresetImplCopyWith<$Res> implements $PresetCopyWith<$Res> {
       {String id,
       String name,
       String? description,
+      String? folderId,
+      String? iconEmoji,
+      @ColorConverter() Color? color,
       PresetCategory category,
       int playerCount,
       TimerType timerType,
@@ -205,11 +299,18 @@ abstract class _$$PresetImplCopyWith<$Res> implements $PresetCopyWith<$Res> {
       Duration? moveTime,
       Duration? increment,
       Duration? delay,
+      int byoyomiPeriods,
+      Duration? byoyomiTime,
+      int canadianMoves,
       TimeoutBehavior timeoutBehavior,
       TurnOrder turnOrder,
       bool isBuiltIn,
       bool isFavorite,
-      List<String> tags});
+      List<String> tags,
+      int sortOrder,
+      int? createdAt,
+      int? lastUsedAt,
+      int useCount});
 }
 
 /// @nodoc
@@ -226,6 +327,9 @@ class __$$PresetImplCopyWithImpl<$Res>
     Object? id = null,
     Object? name = null,
     Object? description = freezed,
+    Object? folderId = freezed,
+    Object? iconEmoji = freezed,
+    Object? color = freezed,
     Object? category = null,
     Object? playerCount = null,
     Object? timerType = null,
@@ -233,11 +337,18 @@ class __$$PresetImplCopyWithImpl<$Res>
     Object? moveTime = freezed,
     Object? increment = freezed,
     Object? delay = freezed,
+    Object? byoyomiPeriods = null,
+    Object? byoyomiTime = freezed,
+    Object? canadianMoves = null,
     Object? timeoutBehavior = null,
     Object? turnOrder = null,
     Object? isBuiltIn = null,
     Object? isFavorite = null,
     Object? tags = null,
+    Object? sortOrder = null,
+    Object? createdAt = freezed,
+    Object? lastUsedAt = freezed,
+    Object? useCount = null,
   }) {
     return _then(_$PresetImpl(
       id: null == id
@@ -252,6 +363,18 @@ class __$$PresetImplCopyWithImpl<$Res>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String?,
+      folderId: freezed == folderId
+          ? _value.folderId
+          : folderId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      iconEmoji: freezed == iconEmoji
+          ? _value.iconEmoji
+          : iconEmoji // ignore: cast_nullable_to_non_nullable
+              as String?,
+      color: freezed == color
+          ? _value.color
+          : color // ignore: cast_nullable_to_non_nullable
+              as Color?,
       category: null == category
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
@@ -280,6 +403,18 @@ class __$$PresetImplCopyWithImpl<$Res>
           ? _value.delay
           : delay // ignore: cast_nullable_to_non_nullable
               as Duration?,
+      byoyomiPeriods: null == byoyomiPeriods
+          ? _value.byoyomiPeriods
+          : byoyomiPeriods // ignore: cast_nullable_to_non_nullable
+              as int,
+      byoyomiTime: freezed == byoyomiTime
+          ? _value.byoyomiTime
+          : byoyomiTime // ignore: cast_nullable_to_non_nullable
+              as Duration?,
+      canadianMoves: null == canadianMoves
+          ? _value.canadianMoves
+          : canadianMoves // ignore: cast_nullable_to_non_nullable
+              as int,
       timeoutBehavior: null == timeoutBehavior
           ? _value.timeoutBehavior
           : timeoutBehavior // ignore: cast_nullable_to_non_nullable
@@ -300,6 +435,22 @@ class __$$PresetImplCopyWithImpl<$Res>
           ? _value._tags
           : tags // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      sortOrder: null == sortOrder
+          ? _value.sortOrder
+          : sortOrder // ignore: cast_nullable_to_non_nullable
+              as int,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as int?,
+      lastUsedAt: freezed == lastUsedAt
+          ? _value.lastUsedAt
+          : lastUsedAt // ignore: cast_nullable_to_non_nullable
+              as int?,
+      useCount: null == useCount
+          ? _value.useCount
+          : useCount // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -311,6 +462,9 @@ class _$PresetImpl implements _Preset {
       {required this.id,
       required this.name,
       this.description,
+      this.folderId,
+      this.iconEmoji,
+      @ColorConverter() this.color,
       this.category = PresetCategory.custom,
       this.playerCount = 2,
       this.timerType = TimerType.countdown,
@@ -318,11 +472,18 @@ class _$PresetImpl implements _Preset {
       this.moveTime,
       this.increment,
       this.delay,
+      this.byoyomiPeriods = 0,
+      this.byoyomiTime,
+      this.canadianMoves = 0,
       this.timeoutBehavior = TimeoutBehavior.lose,
       this.turnOrder = TurnOrder.alternating,
       this.isBuiltIn = false,
       this.isFavorite = false,
-      final List<String> tags = const []})
+      final List<String> tags = const [],
+      this.sortOrder = 0,
+      this.createdAt,
+      this.lastUsedAt,
+      this.useCount = 0})
       : _tags = tags;
 
   factory _$PresetImpl.fromJson(Map<String, dynamic> json) =>
@@ -339,6 +500,19 @@ class _$PresetImpl implements _Preset {
   /// Optional description
   @override
   final String? description;
+
+  /// Folder ID for organization (null = uncategorized)
+  @override
+  final String? folderId;
+
+  /// Custom emoji icon
+  @override
+  final String? iconEmoji;
+
+  /// Accent color for the preset card
+  @override
+  @ColorConverter()
+  final Color? color;
 
   /// Category for organization
   @override
@@ -370,6 +544,20 @@ class _$PresetImpl implements _Preset {
   /// Delay before time starts ticking
   @override
   final Duration? delay;
+
+  /// Byo-yomi periods count
+  @override
+  @JsonKey()
+  final int byoyomiPeriods;
+
+  /// Byo-yomi time per period
+  @override
+  final Duration? byoyomiTime;
+
+  /// Canadian byo-yomi: moves required per period
+  @override
+  @JsonKey()
+  final int canadianMoves;
 
   /// Timeout behavior
   @override
@@ -403,9 +591,27 @@ class _$PresetImpl implements _Preset {
     return EqualUnmodifiableListView(_tags);
   }
 
+  /// Manual sort order within folder
+  @override
+  @JsonKey()
+  final int sortOrder;
+
+  /// Creation timestamp (milliseconds since epoch)
+  @override
+  final int? createdAt;
+
+  /// Last used timestamp (milliseconds since epoch)
+  @override
+  final int? lastUsedAt;
+
+  /// Number of times this preset was used
+  @override
+  @JsonKey()
+  final int useCount;
+
   @override
   String toString() {
-    return 'Preset(id: $id, name: $name, description: $description, category: $category, playerCount: $playerCount, timerType: $timerType, mainTime: $mainTime, moveTime: $moveTime, increment: $increment, delay: $delay, timeoutBehavior: $timeoutBehavior, turnOrder: $turnOrder, isBuiltIn: $isBuiltIn, isFavorite: $isFavorite, tags: $tags)';
+    return 'Preset(id: $id, name: $name, description: $description, folderId: $folderId, iconEmoji: $iconEmoji, color: $color, category: $category, playerCount: $playerCount, timerType: $timerType, mainTime: $mainTime, moveTime: $moveTime, increment: $increment, delay: $delay, byoyomiPeriods: $byoyomiPeriods, byoyomiTime: $byoyomiTime, canadianMoves: $canadianMoves, timeoutBehavior: $timeoutBehavior, turnOrder: $turnOrder, isBuiltIn: $isBuiltIn, isFavorite: $isFavorite, tags: $tags, sortOrder: $sortOrder, createdAt: $createdAt, lastUsedAt: $lastUsedAt, useCount: $useCount)';
   }
 
   @override
@@ -417,6 +623,11 @@ class _$PresetImpl implements _Preset {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.description, description) ||
                 other.description == description) &&
+            (identical(other.folderId, folderId) ||
+                other.folderId == folderId) &&
+            (identical(other.iconEmoji, iconEmoji) ||
+                other.iconEmoji == iconEmoji) &&
+            (identical(other.color, color) || other.color == color) &&
             (identical(other.category, category) ||
                 other.category == category) &&
             (identical(other.playerCount, playerCount) ||
@@ -430,6 +641,12 @@ class _$PresetImpl implements _Preset {
             (identical(other.increment, increment) ||
                 other.increment == increment) &&
             (identical(other.delay, delay) || other.delay == delay) &&
+            (identical(other.byoyomiPeriods, byoyomiPeriods) ||
+                other.byoyomiPeriods == byoyomiPeriods) &&
+            (identical(other.byoyomiTime, byoyomiTime) ||
+                other.byoyomiTime == byoyomiTime) &&
+            (identical(other.canadianMoves, canadianMoves) ||
+                other.canadianMoves == canadianMoves) &&
             (identical(other.timeoutBehavior, timeoutBehavior) ||
                 other.timeoutBehavior == timeoutBehavior) &&
             (identical(other.turnOrder, turnOrder) ||
@@ -438,28 +655,47 @@ class _$PresetImpl implements _Preset {
                 other.isBuiltIn == isBuiltIn) &&
             (identical(other.isFavorite, isFavorite) ||
                 other.isFavorite == isFavorite) &&
-            const DeepCollectionEquality().equals(other._tags, _tags));
+            const DeepCollectionEquality().equals(other._tags, _tags) &&
+            (identical(other.sortOrder, sortOrder) ||
+                other.sortOrder == sortOrder) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.lastUsedAt, lastUsedAt) ||
+                other.lastUsedAt == lastUsedAt) &&
+            (identical(other.useCount, useCount) ||
+                other.useCount == useCount));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      name,
-      description,
-      category,
-      playerCount,
-      timerType,
-      mainTime,
-      moveTime,
-      increment,
-      delay,
-      timeoutBehavior,
-      turnOrder,
-      isBuiltIn,
-      isFavorite,
-      const DeepCollectionEquality().hash(_tags));
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        id,
+        name,
+        description,
+        folderId,
+        iconEmoji,
+        color,
+        category,
+        playerCount,
+        timerType,
+        mainTime,
+        moveTime,
+        increment,
+        delay,
+        byoyomiPeriods,
+        byoyomiTime,
+        canadianMoves,
+        timeoutBehavior,
+        turnOrder,
+        isBuiltIn,
+        isFavorite,
+        const DeepCollectionEquality().hash(_tags),
+        sortOrder,
+        createdAt,
+        lastUsedAt,
+        useCount
+      ]);
 
   @JsonKey(ignore: true)
   @override
@@ -480,6 +716,9 @@ abstract class _Preset implements Preset {
       {required final String id,
       required final String name,
       final String? description,
+      final String? folderId,
+      final String? iconEmoji,
+      @ColorConverter() final Color? color,
       final PresetCategory category,
       final int playerCount,
       final TimerType timerType,
@@ -487,11 +726,18 @@ abstract class _Preset implements Preset {
       final Duration? moveTime,
       final Duration? increment,
       final Duration? delay,
+      final int byoyomiPeriods,
+      final Duration? byoyomiTime,
+      final int canadianMoves,
       final TimeoutBehavior timeoutBehavior,
       final TurnOrder turnOrder,
       final bool isBuiltIn,
       final bool isFavorite,
-      final List<String> tags}) = _$PresetImpl;
+      final List<String> tags,
+      final int sortOrder,
+      final int? createdAt,
+      final int? lastUsedAt,
+      final int useCount}) = _$PresetImpl;
 
   factory _Preset.fromJson(Map<String, dynamic> json) = _$PresetImpl.fromJson;
 
@@ -507,6 +753,19 @@ abstract class _Preset implements Preset {
 
   /// Optional description
   String? get description;
+  @override
+
+  /// Folder ID for organization (null = uncategorized)
+  String? get folderId;
+  @override
+
+  /// Custom emoji icon
+  String? get iconEmoji;
+  @override
+
+  /// Accent color for the preset card
+  @ColorConverter()
+  Color? get color;
   @override
 
   /// Category for organization
@@ -537,6 +796,18 @@ abstract class _Preset implements Preset {
   Duration? get delay;
   @override
 
+  /// Byo-yomi periods count
+  int get byoyomiPeriods;
+  @override
+
+  /// Byo-yomi time per period
+  Duration? get byoyomiTime;
+  @override
+
+  /// Canadian byo-yomi: moves required per period
+  int get canadianMoves;
+  @override
+
   /// Timeout behavior
   TimeoutBehavior get timeoutBehavior;
   @override
@@ -555,6 +826,22 @@ abstract class _Preset implements Preset {
 
   /// Tags for search
   List<String> get tags;
+  @override
+
+  /// Manual sort order within folder
+  int get sortOrder;
+  @override
+
+  /// Creation timestamp (milliseconds since epoch)
+  int? get createdAt;
+  @override
+
+  /// Last used timestamp (milliseconds since epoch)
+  int? get lastUsedAt;
+  @override
+
+  /// Number of times this preset was used
+  int get useCount;
   @override
   @JsonKey(ignore: true)
   _$$PresetImplCopyWith<_$PresetImpl> get copyWith =>

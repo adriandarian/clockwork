@@ -2,6 +2,7 @@
 /// This uses freezed for immutability and JSON serialization.
 library;
 
+import 'package:flutter/material.dart' show Color;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'preset.freezed.dart';
@@ -15,11 +16,17 @@ enum TimerType {
   /// Reset to move time after each tap (speed games)
   resetPerMove,
   
-  /// Countdown with delay before time starts ticking
+  /// Fischer - Base time + increment after each move
+  fischer,
+  
+  /// Countdown with delay before time starts ticking (Bronstein)
   delay,
   
-  /// Byo-yomi style (overtime periods)
+  /// Byo-yomi style (overtime periods) - Japanese
   byoyomi,
+  
+  /// Canadian byo-yomi (X moves in Y time)
+  canadianByoyomi,
 }
 
 /// What happens when time runs out
@@ -46,10 +53,22 @@ enum TurnOrder {
 /// Category for preset organization
 enum PresetCategory {
   chess,
+  go,
   board,
   party,
   sports,
   custom,
+}
+
+/// JSON converter for Color
+class ColorConverter implements JsonConverter<Color?, int?> {
+  const ColorConverter();
+
+  @override
+  Color? fromJson(int? json) => json != null ? Color(json) : null;
+
+  @override
+  int? toJson(Color? color) => color?.toARGB32();
 }
 
 @freezed
@@ -63,6 +82,15 @@ class Preset with _$Preset {
     
     /// Optional description
     String? description,
+    
+    /// Folder ID for organization (null = uncategorized)
+    String? folderId,
+    
+    /// Custom emoji icon
+    String? iconEmoji,
+    
+    /// Accent color for the preset card
+    @ColorConverter() Color? color,
     
     /// Category for organization
     @Default(PresetCategory.custom) PresetCategory category,
@@ -85,6 +113,15 @@ class Preset with _$Preset {
     /// Delay before time starts ticking
     Duration? delay,
     
+    /// Byo-yomi periods count
+    @Default(0) int byoyomiPeriods,
+    
+    /// Byo-yomi time per period
+    Duration? byoyomiTime,
+    
+    /// Canadian byo-yomi: moves required per period
+    @Default(0) int canadianMoves,
+    
     /// Timeout behavior
     @Default(TimeoutBehavior.lose) TimeoutBehavior timeoutBehavior,
     
@@ -99,6 +136,18 @@ class Preset with _$Preset {
     
     /// Tags for search
     @Default([]) List<String> tags,
+    
+    /// Manual sort order within folder
+    @Default(0) int sortOrder,
+    
+    /// Creation timestamp (milliseconds since epoch)
+    int? createdAt,
+    
+    /// Last used timestamp (milliseconds since epoch)
+    int? lastUsedAt,
+    
+    /// Number of times this preset was used
+    @Default(0) int useCount,
   }) = _Preset;
   
   factory Preset.fromJson(Map<String, dynamic> json) => _$PresetFromJson(json);

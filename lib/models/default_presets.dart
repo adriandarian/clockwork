@@ -155,17 +155,108 @@ class DefaultPresets {
     tags: ['party', 'multiplayer', 'reset'],
   );
   
+  // ============================================
+  // GO / BADUK PRESETS
+  // ============================================
+  
+  /// Go: Casual 10 minutes per side
+  static const goCasual = Preset(
+    id: 'go-casual-10',
+    name: 'Go Casual 10min',
+    description: '10 minutes per player. Great for casual games.',
+    category: PresetCategory.go,
+    playerCount: 2,
+    timerType: TimerType.countdown,
+    mainTime: Duration(minutes: 10),
+    timeoutBehavior: TimeoutBehavior.lose,
+    isBuiltIn: true,
+    tags: ['go', 'baduk', 'weiqi', 'casual'],
+  );
+  
+  /// Go: 30 min + 5×30s byo-yomi (common online format)
+  static const goByoyomi30 = Preset(
+    id: 'go-byoyomi-30-5x30',
+    name: 'Go 30min + 5×30s',
+    description: '30 min main time, then 5 periods of 30 seconds byo-yomi.',
+    category: PresetCategory.go,
+    playerCount: 2,
+    timerType: TimerType.byoyomi,
+    mainTime: Duration(minutes: 30),
+    byoyomiPeriods: 5,
+    byoyomiTime: Duration(seconds: 30),
+    timeoutBehavior: TimeoutBehavior.lose,
+    isBuiltIn: true,
+    tags: ['go', 'baduk', 'byo-yomi', 'online'],
+  );
+  
+  /// Go: 60 min + 3×30s byo-yomi (longer games)
+  static const goByoyomi60 = Preset(
+    id: 'go-byoyomi-60-3x30',
+    name: 'Go 60min + 3×30s',
+    description: '60 min main time with 3 periods of 30 seconds overtime.',
+    category: PresetCategory.go,
+    playerCount: 2,
+    timerType: TimerType.byoyomi,
+    mainTime: Duration(minutes: 60),
+    byoyomiPeriods: 3,
+    byoyomiTime: Duration(seconds: 30),
+    timeoutBehavior: TimeoutBehavior.lose,
+    isBuiltIn: true,
+    tags: ['go', 'baduk', 'byo-yomi', 'tournament'],
+  );
+  
+  /// Go: Blitz 5 min + 3×10s (fast games)
+  static const goBlitz = Preset(
+    id: 'go-blitz-5-3x10',
+    name: 'Go Blitz 5min + 3×10s',
+    description: 'Fast! 5 min main time with 3 periods of 10 seconds.',
+    category: PresetCategory.go,
+    playerCount: 2,
+    timerType: TimerType.byoyomi,
+    mainTime: Duration(minutes: 5),
+    byoyomiPeriods: 3,
+    byoyomiTime: Duration(seconds: 10),
+    timeoutBehavior: TimeoutBehavior.lose,
+    isBuiltIn: true,
+    tags: ['go', 'baduk', 'blitz', 'fast'],
+  );
+  
+  /// Go: Canadian - 25 moves in 10 minutes
+  static const goCanadian = Preset(
+    id: 'go-canadian-25-10',
+    name: 'Go Canadian 25/10min',
+    description: '10 min main, then 25 moves per 10 minute overtime period.',
+    category: PresetCategory.go,
+    playerCount: 2,
+    timerType: TimerType.canadianByoyomi,
+    mainTime: Duration(minutes: 10),
+    byoyomiTime: Duration(minutes: 10),
+    canadianMoves: 25,
+    timeoutBehavior: TimeoutBehavior.lose,
+    isBuiltIn: true,
+    tags: ['go', 'baduk', 'canadian', 'tournament'],
+  );
+  
   /// All built-in presets
   static const List<Preset> all = [
+    // Reset timers
     reset30,
     reset10,
     reset60,
+    // Chess
     bullet,
     blitz3,
     blitz5,
     rapid10,
     rapid15,
     classical,
+    // Go
+    goCasual,
+    goByoyomi30,
+    goByoyomi60,
+    goBlitz,
+    goCanadian,
+    // Party
     fourPlayer,
   ];
   
@@ -176,6 +267,9 @@ class DefaultPresets {
   
   /// Get chess presets
   static List<Preset> get chess => byCategory(PresetCategory.chess);
+  
+  /// Get go presets
+  static List<Preset> get go => byCategory(PresetCategory.go);
   
   /// Get party presets (including reset timers)
   static List<Preset> get party => byCategory(PresetCategory.party);
