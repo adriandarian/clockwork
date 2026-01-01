@@ -260,6 +260,12 @@ class DefaultPresets {
     fourPlayer,
   ];
   
+  /// Mock data for development/testing only
+  /// These are NOT bundled with the production app
+  static List<Preset> get mockData => all.map((p) => p.copyWith(
+    isBuiltIn: false, // Mark as user presets so they can be edited/deleted
+  )).toList();
+  
   /// Get presets by category
   static List<Preset> byCategory(PresetCategory category) {
     return all.where((p) => p.category == category).toList();

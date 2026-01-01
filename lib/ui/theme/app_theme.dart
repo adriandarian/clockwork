@@ -155,9 +155,49 @@ class AppTheme {
     ),
   );
   
+  // --- Standard Light Theme ---
+  static final ThemeData standardLight = ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.light,
+    scaffoldBackgroundColor: Colors.grey[100],
+    colorScheme: ColorScheme.light(
+      primary: standardPrimary,
+      secondary: standardSecondary,
+      error: standardError,
+      surface: Colors.white,
+      onSurface: Colors.black87,
+    ),
+    appBarTheme: AppBarTheme(
+      backgroundColor: Colors.grey[100],
+      foregroundColor: Colors.black87,
+      elevation: 0,
+      centerTitle: true,
+      titleTextStyle: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.5,
+        color: Colors.black87,
+      ),
+    ),
+    cardTheme: CardThemeData(
+      color: Colors.white,
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+    ),
+    listTileTheme: const ListTileThemeData(
+      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+    ),
+    dividerTheme: DividerThemeData(
+      color: Colors.grey[300],
+      thickness: 1,
+    ),
+  );
+
   // Getters for main.dart
   static ThemeData get darkTheme => standardDark;
-  static ThemeData get lightTheme => standardDark; // Force dark mode for now
+  static ThemeData get lightTheme => standardLight;
   
   // Helper to check if current theme is Cyber (for widgets)
   static bool isCyber(BuildContext context) {

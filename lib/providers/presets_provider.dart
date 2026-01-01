@@ -1,6 +1,7 @@
 /// Preset repository - manages loading and saving presets.
 library;
 
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/models.dart';
 
@@ -15,12 +16,19 @@ class PresetsNotifier extends StateNotifier<List<Preset>> {
     _loadPresets();
   }
   
-  /// Load presets (built-in + custom from storage)
+  /// Load presets from storage
+  /// In debug mode, loads mock data for testing
+  /// In release mode, starts empty (user creates their own)
   void _loadPresets() {
-    // Start with built-in presets
-    state = [...DefaultPresets.all];
+    // TODO: Load user's saved presets from Hive storage
     
-    // TODO: Load custom presets from Hive storage
+    // In debug mode, load mock data for easier testing
+    if (kDebugMode) {
+      state = [...DefaultPresets.mockData];
+    } else {
+      // Production: start empty, user creates their own presets
+      state = [];
+    }
   }
   
   /// Add a custom preset
@@ -40,12 +48,8 @@ class PresetsNotifier extends StateNotifier<List<Preset>> {
     // TODO: Save to Hive storage
   }
   
-  /// Delete a preset (only custom presets can be deleted)
+  /// Delete a preset
   void deletePreset(String id) {
-    final preset = state.firstWhere((p) => p.id == id, orElse: () => throw Exception('Preset not found'));
-    if (preset.isBuiltIn) {
-      throw Exception('Cannot delete built-in presets');
-    }
     state = state.where((p) => p.id != id).toList();
     // TODO: Remove from Hive storage
   }
