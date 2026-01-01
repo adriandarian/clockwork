@@ -29,7 +29,7 @@ class PresetCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -39,9 +39,11 @@ class PresetCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       preset.name,
-                      style: theme.textTheme.titleLarge?.copyWith(
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   if (onFavorite != null)
@@ -53,6 +55,7 @@ class PresetCard extends StatelessWidget {
                         color: preset.isFavorite 
                             ? const Color(0xFFF59E0B) // Amber
                             : Colors.grey,
+                        size: 20,
                       ),
                       onPressed: onFavorite,
                       padding: EdgeInsets.zero,
@@ -64,23 +67,26 @@ class PresetCard extends StatelessWidget {
                 ],
               ),
               
-              // Description
+              // Description (compact)
               if (preset.description != null) ...[
-                const SizedBox(height: 8),
-                Text(
-                  preset.description!,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.textTheme.bodySmall?.color,
+                const SizedBox(height: 4),
+                Expanded(
+                  child: Text(
+                    preset.description!,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.textTheme.bodySmall?.color,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
-              ],
+              ] else
+                const Spacer(),
               
-              const Spacer(),
-              
-              // Time info
-              Row(
+              // Time info - use Wrap for smaller screens
+              Wrap(
+                spacing: 4,
+                runSpacing: 4,
                 children: [
                   _buildInfoChip(
                     context,
@@ -88,16 +94,13 @@ class PresetCard extends StatelessWidget {
                     _formatDuration(preset.mainTime),
                     theme.colorScheme.primary,
                   ),
-                  if (preset.increment != null) ...[
-                    const SizedBox(width: 8),
+                  if (preset.increment != null)
                     _buildInfoChip(
                       context,
                       Icons.add,
                       _formatDuration(preset.increment!),
                       theme.colorScheme.secondary,
                     ),
-                  ],
-                  const Spacer(),
                   _buildInfoChip(
                     context,
                     Icons.people_outline,
@@ -115,20 +118,20 @@ class PresetCard extends StatelessWidget {
   
   Widget _buildInfoChip(BuildContext context, IconData icon, String label, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(6),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(width: 4),
+          Icon(icon, size: 12, color: color),
+          const SizedBox(width: 3),
           Text(
             label,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 11,
               fontWeight: FontWeight.w600,
               color: color,
             ),

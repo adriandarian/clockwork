@@ -45,6 +45,46 @@ dart run build_runner build
 flutter run
 ```
 
+### Running on iOS Simulator
+
+To run the app on an iOS simulator:
+
+```bash
+# Install CocoaPods (if not installed)
+brew install cocoapods
+
+# Install iOS dependencies
+cd ios && pod install && cd ..
+
+# List available simulators
+xcrun simctl list devices available
+
+# Create a new simulator (if needed)
+xcrun simctl create "iPhone 17 Pro" \
+  com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro \
+  com.apple.CoreSimulator.SimRuntime.iOS-26-2
+
+# Boot the simulator
+xcrun simctl boot <SIMULATOR_UUID>
+
+# Open Simulator app
+open -a Simulator
+
+# Run the app on the simulator
+flutter run -d <SIMULATOR_UUID>
+```
+
+**Hot Reload Commands** (while app is running):
+- `r` - Hot reload (instant code changes)
+- `R` - Hot restart (resets app state)
+- `q` - Quit
+
+### Running on macOS
+
+```bash
+flutter run -d macos
+```
+
 ## Project Structure
 
 ```
