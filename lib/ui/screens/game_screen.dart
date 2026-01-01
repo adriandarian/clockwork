@@ -1,4 +1,5 @@
 /// Game screen - the main timer interface during gameplay
+/// Cyber-Industrial styled game screen
 library;
 
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../engine/engine.dart';
 import '../../providers/providers.dart';
+import '../theme/app_theme.dart';
 import '../widgets/player_tap_zone.dart';
 
 class GameScreen extends ConsumerStatefulWidget {
@@ -47,7 +49,6 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     final isFinished = gameState.status == GameStatus.finished;
     
     return Scaffold(
-      backgroundColor: Colors.black,
       body: Stack(
         children: [
           // Player tap zones
@@ -126,6 +127,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Exit'),
           ),
         ],
@@ -152,6 +154,9 @@ class _TwoPlayerLayout extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     return Column(
       children: [
         // Player 2 (top, flipped so they can read it from across the table)
@@ -163,6 +168,12 @@ class _TwoPlayerLayout extends StatelessWidget {
             isFlipped: true,
             onTap: () => onTap(1),
           ),
+        ),
+        
+        // Divider
+        Container(
+          height: 2,
+          color: isDark ? Colors.white24 : Colors.black12,
         ),
         
         // Player 1 (bottom)
@@ -193,14 +204,27 @@ class _MultiPlayerLayout extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     return Column(
       children: gameState.players.map((player) {
         return Expanded(
-          child: PlayerTapZone(
-            player: player,
-            isActive: gameState.activePlayerId == player.id,
-            isPaused: isPaused,
-            onTap: () => onTap(player.id),
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: isDark ? Colors.white24 : Colors.black12,
+                  width: 1,
+                ),
+              ),
+            ),
+            child: PlayerTapZone(
+              player: player,
+              isActive: gameState.activePlayerId == player.id,
+              isPaused: isPaused,
+              onTap: () => onTap(player.id),
+            ),
           ),
         );
       }).toList(),
@@ -236,80 +260,107 @@ class _ControlBar extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     return Positioned(
       left: 0,
       right: 0,
       top: 0,
       bottom: 0,
       child: Center(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.8),
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Exit button
-              IconButton(
-                onPressed: onExit,
-                icon: const Icon(Icons.close, size: 20),
-                tooltip: 'Exit',
-              ),
-              
-              // Undo button
-              IconButton(
-                onPressed: canUndo ? onUndo : null,
-                icon: const Icon(Icons.undo, size: 20),
-                tooltip: 'Undo',
-              ),
-              
-              // Preset name & move count
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      presetName,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    if (moveCount > 0)
+        child: Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          color: theme.cardColor.withValues(alpha: 0.9),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Exit button
+                _ControlButton(
+                  onPressed: onExit,
+                  icon: Icons.close,
+                  tooltip: 'Exit',
+                  color: Colors.red,
+                ),
+                
+                // Undo button
+                _ControlButton(
+                  onPressed: canUndo ? onUndo : null,
+                  icon: Icons.undo,
+                  tooltip: 'Undo',
+                  color: isDark ? Colors.amber : Colors.orange,
+                ),
+                
+                // Preset name & move count
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
                       Text(
-                        'Move $moveCount',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey[400],
+                        presetName,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                  ],
+                      if (moveCount > 0)
+                        Text(
+                          'Move $moveCount',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-              
-              // Reset button
-              IconButton(
-                onPressed: onReset,
-                icon: const Icon(Icons.refresh, size: 20),
-                tooltip: 'Reset',
-              ),
-              
-              // Pause button
-              IconButton(
-                onPressed: isNotStarted || isFinished ? null : onPause,
-                icon: Icon(
-                  isPaused ? Icons.play_arrow : Icons.pause,
-                  size: 20,
+                
+                // Reset button
+                _ControlButton(
+                  onPressed: onReset,
+                  icon: Icons.refresh,
+                  tooltip: 'Reset',
+                  color: isDark ? Colors.purpleAccent : Colors.purple,
                 ),
-                tooltip: isPaused ? 'Resume' : 'Pause',
-              ),
-            ],
+                
+                // Pause button
+                _ControlButton(
+                  onPressed: isNotStarted || isFinished ? null : onPause,
+                  icon: isPaused ? Icons.play_arrow : Icons.pause,
+                  tooltip: isPaused ? 'Resume' : 'Pause',
+                  color: theme.colorScheme.primary,
+                ),
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ControlButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final IconData icon;
+  final String tooltip;
+  final Color color;
+  
+  const _ControlButton({
+    required this.onPressed,
+    required this.icon,
+    required this.tooltip,
+    required this.color,
+  });
+  
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 24),
+      tooltip: tooltip,
+      color: color,
     );
   }
 }
@@ -322,27 +373,27 @@ class _StartOverlay extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return GestureDetector(
       onTap: onStart,
       child: Container(
-        color: Colors.black.withOpacity(0.7),
-        child: const Center(
+        color: Colors.black.withValues(alpha: 0.4),
+        child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 Icons.touch_app_outlined,
                 size: 64,
-                color: Colors.white54,
+                color: Colors.white.withValues(alpha: 0.9),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Text(
-                'TAP TO START',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 4,
+                'Tap to Start',
+                style: theme.textTheme.headlineMedium?.copyWith(
                   color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
@@ -361,35 +412,34 @@ class _PausedOverlay extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return GestureDetector(
       onTap: onResume,
       child: Container(
-        color: Colors.black.withOpacity(0.7),
-        child: const Center(
+        color: Colors.black.withValues(alpha: 0.4),
+        child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 Icons.pause_circle_outline,
                 size: 64,
-                color: Colors.white54,
+                color: Colors.white.withValues(alpha: 0.9),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Text(
-                'PAUSED',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 4,
+                'Paused',
+                style: theme.textTheme.headlineMedium?.copyWith(
                   color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
-                'Tap to resume',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white54,
+                'Tap to Resume',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: Colors.white70,
                 ),
               ),
             ],
@@ -414,31 +464,36 @@ class _GameEndedOverlay extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     // Find the winner (non-timed-out player) or null if no clear winner
     final timedOutPlayers = gameState.players.where((p) => p.isTimedOut).toList();
     final winnerId = timedOutPlayers.length == gameState.players.length - 1
         ? gameState.players.firstWhere((p) => !p.isTimedOut).id
         : null;
     
+    final winnerColor = winnerId != null 
+        ? AppTheme.getPlayerColor(winnerId) 
+        : Colors.white;
+    
     return Container(
-      color: Colors.black.withOpacity(0.85),
+      color: Colors.black.withValues(alpha: 0.8),
       child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (winnerId != null) ...[
-              const Icon(
+              Icon(
                 Icons.emoji_events_outlined,
                 size: 64,
-                color: Colors.amber,
+                color: winnerColor,
               ),
               const SizedBox(height: 16),
               Text(
                 'Player ${winnerId + 1} Wins!',
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
+                style: theme.textTheme.headlineMedium?.copyWith(
                   color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ] else ...[
@@ -448,21 +503,19 @@ class _GameEndedOverlay extends StatelessWidget {
                 color: Colors.white54,
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'Game Over',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
+                style: theme.textTheme.headlineMedium?.copyWith(
                   color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
             const SizedBox(height: 8),
             Text(
-              '${gameState.moveCount} moves',
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.white54,
+              '${gameState.moveCount} Moves',
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: Colors.white70,
               ),
             ),
             const SizedBox(height: 32),
@@ -472,6 +525,7 @@ class _GameEndedOverlay extends StatelessWidget {
                 OutlinedButton(
                   onPressed: onExit,
                   style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
                     side: const BorderSide(color: Colors.white54),
                   ),
                   child: const Padding(
@@ -482,6 +536,10 @@ class _GameEndedOverlay extends StatelessWidget {
                 const SizedBox(width: 16),
                 ElevatedButton(
                   onPressed: onNewGame,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: winnerId != null ? winnerColor : theme.colorScheme.primary,
+                    foregroundColor: Colors.black,
+                  ),
                   child: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     child: Text('Play Again'),
@@ -495,3 +553,4 @@ class _GameEndedOverlay extends StatelessWidget {
     );
   }
 }
+

@@ -1,10 +1,12 @@
 /// Home screen - preset selection and quick start
+/// Cyber-Industrial styled home screen
 library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/models.dart';
 import '../../providers/providers.dart';
+
 import '../widgets/preset_card.dart';
 import 'game_screen.dart';
 
@@ -14,9 +16,11 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final presets = ref.watch(presetsProvider);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -29,23 +33,37 @@ class HomeScreen extends ConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.timer_outlined,
                           size: 32,
-                          color: Colors.white,
+                          color: isDark ? Colors.white : Colors.black,
                         ),
                         const SizedBox(width: 12),
                         Text(
                           'Clockwork',
-                          style: Theme.of(context).textTheme.headlineLarge,
+                          style: theme.textTheme.headlineLarge?.copyWith(
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      'Universal game timer',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.grey,
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          left: BorderSide(
+                            color: theme.colorScheme.primary,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        'Universal Game Timer',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: isDark ? Colors.white70 : Colors.black54,
+                          fontSize: 14,
+                        ),
                       ),
                     ),
                   ],
@@ -62,7 +80,7 @@ class HomeScreen extends ConsumerWidget {
                   children: [
                     Text(
                       'Quick Start',
-                      style: Theme.of(context).textTheme.titleLarge,
+                      style: theme.textTheme.titleLarge,
                     ),
                     const SizedBox(height: 16),
                     Row(
@@ -71,6 +89,7 @@ class HomeScreen extends ConsumerWidget {
                           child: _QuickStartButton(
                             label: '30s Reset',
                             icon: Icons.refresh,
+                            color: theme.colorScheme.primary,
                             onTap: () => _startGame(
                               context, 
                               ref, 
@@ -83,6 +102,7 @@ class HomeScreen extends ConsumerWidget {
                           child: _QuickStartButton(
                             label: '5+3 Blitz',
                             icon: Icons.bolt,
+                            color: theme.colorScheme.secondary,
                             onTap: () => _startGame(
                               context, 
                               ref, 
@@ -105,6 +125,7 @@ class HomeScreen extends ConsumerWidget {
             _PresetSection(
               title: 'Reset Timers',
               subtitle: 'Timer resets after each move',
+              color: theme.colorScheme.error,
               presets: presets.where((p) => 
                 p.timerType == TimerType.resetPerMove
               ).toList(),
@@ -116,6 +137,7 @@ class HomeScreen extends ConsumerWidget {
             _PresetSection(
               title: 'Chess',
               subtitle: 'Traditional chess clock formats',
+              color: Colors.purple,
               presets: presets.where((p) => 
                 p.category == PresetCategory.chess
               ).toList(),
@@ -131,11 +153,17 @@ class HomeScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          // TODO: Navigate to preset builder
           _showCustomPresetDialog(context, ref);
         },
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
-        label: const Text('Custom'),
+        label: const Text(
+          'Custom',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
@@ -150,10 +178,12 @@ class HomeScreen extends ConsumerWidget {
   }
   
   void _showCustomPresetDialog(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF1E1E1E),
+      backgroundColor: theme.scaffoldBackgroundColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -170,34 +200,39 @@ class HomeScreen extends ConsumerWidget {
 class _QuickStartButton extends StatelessWidget {
   final String label;
   final IconData icon;
+  final Color color;
   final VoidCallback onTap;
   
   const _QuickStartButton({
     required this.label,
     required this.icon,
+    required this.color,
     required this.onTap,
   });
   
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white.withOpacity(0.05),
-      borderRadius: BorderRadius.circular(16),
+      color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
+        child: Container(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: Colors.white70),
+              Icon(icon, color: color),
               const SizedBox(width: 8),
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: color,
                 ),
               ),
             ],
@@ -211,6 +246,7 @@ class _QuickStartButton extends StatelessWidget {
 class _PresetSection extends StatelessWidget {
   final String title;
   final String subtitle;
+  final Color color;
   final List<Preset> presets;
   final void Function(Preset) onPresetTap;
   final void Function(Preset) onFavorite;
@@ -218,6 +254,7 @@ class _PresetSection extends StatelessWidget {
   const _PresetSection({
     required this.title,
     required this.subtitle,
+    required this.color,
     required this.presets,
     required this.onPresetTap,
     required this.onFavorite,
@@ -227,33 +264,60 @@ class _PresetSection extends StatelessWidget {
   Widget build(BuildContext context) {
     if (presets.isEmpty) return const SliverToBoxAdapter(child: SizedBox.shrink());
     
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              title,
-              style: Theme.of(context).textTheme.titleLarge,
+            Row(
+              children: [
+                Container(
+                  width: 4,
+                  height: 24,
+                  color: color,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: isDark ? Colors.white : Colors.black,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey,
+            Padding(
+              padding: const EdgeInsets.only(left: 12, top: 4, bottom: 16),
+              child: Text(
+                subtitle,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: isDark ? Colors.white54 : Colors.black54,
+                  fontSize: 12,
+                ),
               ),
             ),
-            const SizedBox(height: 16),
-            ...presets.map((preset) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: PresetCard(
-                preset: preset,
-                onTap: () => onPresetTap(preset),
-                onFavorite: () => onFavorite(preset),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 1.1,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
               ),
-            )),
-            const SizedBox(height: 16),
+              itemCount: presets.length,
+              itemBuilder: (context, index) {
+                return PresetCard(
+                  preset: presets[index],
+                  onTap: () => onPresetTap(presets[index]),
+                  onFavorite: () => onFavorite(presets[index]),
+                );
+              },
+            ),
+            const SizedBox(height: 24),
           ],
         ),
       ),
@@ -329,9 +393,13 @@ class _QuickCustomPresetSheetState extends State<_QuickCustomPresetSheet> {
             
             // Timer type
             SwitchListTile(
-              title: const Text('Reset per move'),
+              title: const Text(
+                'Reset per move',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               subtitle: const Text('Timer resets after each tap'),
               value: _resetPerMove,
+              activeTrackColor: Theme.of(context).colorScheme.primary,
               onChanged: (v) => setState(() => _resetPerMove = v),
               contentPadding: EdgeInsets.zero,
             ),
@@ -438,6 +506,8 @@ class _NumberPicker extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -448,28 +518,36 @@ class _NumberPicker extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        Row(
-          children: [
-            IconButton(
-              onPressed: value > min 
-                  ? () => onChanged(value - 1)
-                  : null,
-              icon: const Icon(Icons.remove),
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: isDark ? Colors.white24 : Colors.black12,
             ),
-            Expanded(
-              child: Text(
-                value.toString(),
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineMedium,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: value > min 
+                    ? () => onChanged(value - 1)
+                    : null,
+                icon: const Icon(Icons.remove),
               ),
-            ),
-            IconButton(
-              onPressed: value < max 
-                  ? () => onChanged(value + 1)
-                  : null,
-              icon: const Icon(Icons.add),
-            ),
-          ],
+              Expanded(
+                child: Text(
+                  value.toString(),
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+              ),
+              IconButton(
+                onPressed: value < max 
+                    ? () => onChanged(value + 1)
+                    : null,
+                icon: const Icon(Icons.add),
+              ),
+            ],
+          ),
         ),
       ],
     );

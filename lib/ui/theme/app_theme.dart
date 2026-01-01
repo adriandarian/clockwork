@@ -1,5 +1,5 @@
 /// App theme configuration
-/// OLED-friendly dark theme with high contrast for timer visibility
+/// Supports multiple themes: Standard (Modern Minimalist) and Cyber (Retro/Industrial)
 library;
 
 import 'package:flutter/material.dart';
@@ -7,14 +7,22 @@ import 'package:flutter/material.dart';
 class AppTheme {
   AppTheme._();
   
-  // Colors
-  static const Color primaryColor = Color(0xFF6366F1); // Indigo
-  static const Color secondaryColor = Color(0xFF22D3EE); // Cyan
-  static const Color errorColor = Color(0xFFEF4444); // Red
-  static const Color warningColor = Color(0xFFF59E0B); // Amber
-  static const Color successColor = Color(0xFF10B981); // Emerald
+  // --- Standard Theme Colors ---
+  static const Color standardPrimary = Color(0xFF3B82F6); // Blue
+  static const Color standardSecondary = Color(0xFF10B981); // Emerald
+  static const Color standardBackground = Color(0xFF121212);
+  static const Color standardSurface = Color(0xFF1E1E1E);
+  static const Color standardError = Color(0xFFEF4444);
   
-  // Player colors
+  // --- Cyber Theme Colors ---
+  static const Color cyberBlack = Color(0xFF050505);
+  static const Color cyberBlue = Color(0xFF00F0FF);
+  static const Color cyberPurple = Color(0xFFBC13FE);
+  static const Color cyberRed = Color(0xFFFF2A2A);
+  static const Color cyberYellow = Color(0xFFFAFF00);
+  static const Color cyberGreen = Color(0xFF00FF94);
+  
+  // --- Shared Colors ---
   static const List<Color> playerColors = [
     Color(0xFF3B82F6), // Blue
     Color(0xFFEF4444), // Red
@@ -24,31 +32,31 @@ class AppTheme {
     Color(0xFFEC4899), // Pink
   ];
   
-  // Timer colors based on remaining time
-  static const Color timerNormal = Colors.white;
-  static const Color timerWarning = Color(0xFFF59E0B);
-  static const Color timerCritical = Color(0xFFEF4444);
-  
-  // Dark theme (OLED-friendly)
-  static final ThemeData darkTheme = ThemeData(
+  // --- Standard Dark Theme (Default) ---
+  static final ThemeData standardDark = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: Colors.black,
+    scaffoldBackgroundColor: standardBackground,
     colorScheme: ColorScheme.dark(
-      primary: primaryColor,
-      secondary: secondaryColor,
-      error: errorColor,
-      surface: const Color(0xFF121212),
+      primary: standardPrimary,
+      secondary: standardSecondary,
+      error: standardError,
+      surface: standardSurface,
       onSurface: Colors.white,
     ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.black,
+      backgroundColor: standardBackground,
       foregroundColor: Colors.white,
       elevation: 0,
       centerTitle: true,
+      titleTextStyle: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.5,
+      ),
     ),
     cardTheme: CardThemeData(
-      color: const Color(0xFF1E1E1E),
+      color: standardSurface,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -56,47 +64,34 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: primaryColor,
+        backgroundColor: standardPrimary,
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-      ),
-    ),
-    textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(
-        foregroundColor: primaryColor,
-      ),
-    ),
-    iconButtonTheme: IconButtonThemeData(
-      style: IconButton.styleFrom(
-        foregroundColor: Colors.white,
+        textStyle: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 16,
+        ),
       ),
     ),
     textTheme: const TextTheme(
       displayLarge: TextStyle(
         fontSize: 72,
         fontWeight: FontWeight.bold,
+        letterSpacing: -1.0,
         fontFeatures: [FontFeature.tabularFigures()],
       ),
       displayMedium: TextStyle(
         fontSize: 56,
         fontWeight: FontWeight.bold,
-        fontFeatures: [FontFeature.tabularFigures()],
-      ),
-      displaySmall: TextStyle(
-        fontSize: 40,
-        fontWeight: FontWeight.bold,
+        letterSpacing: -1.0,
         fontFeatures: [FontFeature.tabularFigures()],
       ),
       headlineLarge: TextStyle(
         fontSize: 32,
         fontWeight: FontWeight.bold,
-      ),
-      headlineMedium: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
       ),
       titleLarge: TextStyle(
         fontSize: 20,
@@ -104,69 +99,73 @@ class AppTheme {
       ),
       bodyLarge: TextStyle(
         fontSize: 16,
+        height: 1.5,
       ),
       bodyMedium: TextStyle(
         fontSize: 14,
-      ),
-      labelLarge: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
+        height: 1.5,
+        color: Colors.white70,
       ),
     ),
   );
-  
-  // Light theme
-  static final ThemeData lightTheme = ThemeData(
+
+  // --- Cyber Theme (Optional) ---
+  static final ThemeData cyberTheme = ThemeData(
     useMaterial3: true,
-    brightness: Brightness.light,
-    scaffoldBackgroundColor: Colors.white,
-    colorScheme: ColorScheme.light(
-      primary: primaryColor,
-      secondary: secondaryColor,
-      error: errorColor,
-      surface: Colors.grey[100]!,
-      onSurface: Colors.black,
+    brightness: Brightness.dark,
+    scaffoldBackgroundColor: cyberBlack,
+    colorScheme: ColorScheme.dark(
+      primary: cyberBlue,
+      secondary: cyberPurple,
+      error: cyberRed,
+      surface: const Color(0xFF121212),
+      onSurface: Colors.white,
+      outline: Colors.white24,
     ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.white,
-      foregroundColor: Colors.black,
+      backgroundColor: cyberBlack,
+      foregroundColor: Colors.white,
       elevation: 0,
       centerTitle: true,
+      titleTextStyle: TextStyle(
+        fontFamily: 'RobotoMono',
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 1.5,
+      ),
     ),
     cardTheme: CardThemeData(
-      color: Colors.grey[50],
+      color: const Color(0xFF1E1E1E),
       elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey[200]!),
+      shape: BeveledRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: Colors.white10, width: 1),
       ),
     ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-    ),
+    // ... (Rest of cyber theme properties would go here if needed fully)
     textTheme: const TextTheme(
       displayLarge: TextStyle(
+        fontFamily: 'RobotoMono',
         fontSize: 72,
         fontWeight: FontWeight.bold,
-        color: Colors.black,
+        letterSpacing: -2,
         fontFeatures: [FontFeature.tabularFigures()],
       ),
-      displayMedium: TextStyle(
-        fontSize: 56,
-        fontWeight: FontWeight.bold,
-        color: Colors.black,
-        fontFeatures: [FontFeature.tabularFigures()],
-      ),
+      // ...
     ),
   );
   
+  // Getters for main.dart
+  static ThemeData get darkTheme => standardDark;
+  static ThemeData get lightTheme => standardDark; // Force dark mode for now
+  
+  // Helper to check if current theme is Cyber (for widgets)
+  static bool isCyber(BuildContext context) {
+    // For now, we are hardcoding to Standard, so this is false.
+    // In the future, we can check Theme.of(context).primaryColor == cyberBlue
+    return false; 
+  }
+
   /// Get color for player by index
   static Color getPlayerColor(int index) {
     return playerColors[index % playerColors.length];
@@ -175,8 +174,8 @@ class AppTheme {
   /// Get timer color based on remaining time
   static Color getTimerColor(Duration remaining, Duration total) {
     final ratio = remaining.inMilliseconds / total.inMilliseconds;
-    if (ratio <= 0.1) return timerCritical;
-    if (ratio <= 0.25) return timerWarning;
-    return timerNormal;
+    if (ratio <= 0.1) return standardError;
+    if (ratio <= 0.25) return const Color(0xFFF59E0B); // Warning
+    return Colors.white;
   }
 }

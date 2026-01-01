@@ -1,8 +1,8 @@
 /// Timer display widget - shows time in a large, readable format
+/// Cyber-Industrial styled timer
 library;
 
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
 
 class TimerDisplay extends StatelessWidget {
   final Duration duration;
@@ -24,12 +24,13 @@ class TimerDisplay extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    final textColor = color ?? _getColor();
-    final size = fontSize ?? (isActive ? 72 : 56);
+    final theme = Theme.of(context);
+    final textColor = color ?? _getColor(context);
+    final size = fontSize ?? (isActive ? 80.0 : 56.0);
     
     return AnimatedDefaultTextStyle(
       duration: const Duration(milliseconds: 200),
-      style: TextStyle(
+      style: theme.textTheme.displayLarge!.copyWith(
         fontSize: size,
         fontWeight: FontWeight.bold,
         color: textColor,
@@ -42,26 +43,25 @@ class TimerDisplay extends StatelessWidget {
     );
   }
   
-  Color _getColor() {
-    if (isPaused) return Colors.grey;
-    if (!isActive) return Colors.white54;
+  Color _getColor(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     
-    if (initialDuration != null) {
-      return AppTheme.getTimerColor(duration, initialDuration!);
-    }
+    if (isPaused) return theme.disabledColor;
+    if (!isActive) return theme.disabledColor.withValues(alpha: 0.5);
     
     // Default color based on remaining time
     if (duration <= const Duration(seconds: 10)) {
-      return AppTheme.timerCritical;
+      return theme.colorScheme.error;
     }
     if (duration <= const Duration(seconds: 30)) {
-      return AppTheme.timerWarning;
+      return isDark ? Colors.amber : Colors.orange;
     }
-    return AppTheme.timerNormal;
+    return isDark ? Colors.white : Colors.black87;
   }
   
   String _formatDuration(Duration d) {
-    if (d.isNegative || d == Duration.zero) return '0:00';
+    if (d.isNegative || d == Duration.zero) return '0.0';
     
     final hours = d.inHours;
     final minutes = d.inMinutes.remainder(60);
