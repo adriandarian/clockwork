@@ -20,6 +20,7 @@ class LibraryScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final allPresets = ref.watch(presetsProvider);
+    final folders = ref.watch(foldersProvider);
     
     // Organize presets by category
     final goPresets = allPresets.where((p) => p.category == PresetCategory.go).toList();
@@ -68,6 +69,14 @@ class LibraryScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.create_new_folder_outlined,
+                      color: isDark ? Colors.white70 : Colors.black54,
+                    ),
+                    tooltip: 'New Folder',
+                    onPressed: () => _showCreateFolderDialog(context, ref),
                   ),
                   IconButton(
                     icon: Icon(
@@ -121,6 +130,52 @@ class LibraryScreen extends ConsumerWidget {
                       onPresetTap: (p) => _startGame(context, ref, p),
                     ),
                   
+                  // User-created folders
+                  ...folders.map((folder) {
+                    // Get presets assigned to this folder
+                    final folderPresets = allPresets.where((p) => p.folderId == folder.id).toList();
+                    return _CategorySection(
+                      id: folder.id,
+                      title: folder.name,
+                      emoji: folder.iconEmoji,
+                      color: theme.colorScheme.primary,
+                      presets: folderPresets,
+                      onPresetTap: (p) => _startGame(context, ref, p),
+                      folderId: folder.id,
+                      onRename: (folderId, name) => _showRenameFolderDialog(context, ref, folderId, name),
+                    );
+                  }),
+                  
+                  // Empty state hint if no content
+                  if (goPresets.isEmpty && chessPresets.isEmpty && resetPresets.isEmpty && folders.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 60),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.timer_outlined,
+                            size: 64,
+                            color: isDark ? Colors.white24 : Colors.black26,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No timers yet',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: isDark ? Colors.white54 : Colors.black54,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Tap "New Timer" to create your first timer\nor create a folder to organize presets',
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: isDark ? Colors.white38 : Colors.black38,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  
                   const SizedBox(height: 100), // Space for FAB
                 ],
               ),
@@ -160,6 +215,153 @@ class LibraryScreen extends ConsumerWidget {
       ),
     );
   }
+
+  void _showCreateFolderDialog(BuildContext context, WidgetRef ref) {
+    final controller = TextEditingController();
+    String selectedEmoji = '📁';
+    
+    showDialog(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Create Folder'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: controller,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  labelText: 'Folder name',
+                  hintText: 'e.g., Tournament Presets',
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text('Choose icon', style: Theme.of(context).textTheme.bodySmall),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                children: ['📁', '⭐', '🎮', '🏆', '⚡', '🎯', '🔥', '💎'].map((emoji) {
+                  final isSelected = selectedEmoji == emoji;
+                  return GestureDetector(
+                    onTap: () => setState(() => selectedEmoji = emoji),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: isSelected 
+                            ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(8),
+                        border: isSelected 
+                            ? Border.all(color: Theme.of(context).colorScheme.primary)
+                            : null,
+                      ),
+                      child: Text(emoji, style: const TextStyle(fontSize: 24)),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                if (controller.text.isNotEmpty) {
+                  final folder = Folder(
+                    id: 'folder-${DateTime.now().millisecondsSinceEpoch}',
+                    name: controller.text,
+                    iconEmoji: selectedEmoji,
+                  );
+                  ref.read(foldersProvider.notifier).createFolder(folder);
+                  Navigator.pop(dialogContext);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Created folder "${controller.text}"')),
+                  );
+                }
+              },
+              child: const Text('Create'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showRenameFolderDialog(BuildContext context, WidgetRef ref, String folderId, String currentName) {
+    final controller = TextEditingController(text: currentName);
+    
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Rename Folder'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(
+            labelText: 'Folder name',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              _showDeleteFolderConfirmation(context, ref, folderId, currentName);
+            },
+            child: const Text('Delete'),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (controller.text.isNotEmpty) {
+                final folders = ref.read(foldersProvider);
+                final folder = folders.firstWhere((f) => f.id == folderId);
+                ref.read(foldersProvider.notifier).updateFolder(
+                  folder.copyWith(name: controller.text),
+                );
+                Navigator.pop(dialogContext);
+              }
+            },
+            child: const Text('Rename'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteFolderConfirmation(BuildContext context, WidgetRef ref, String folderId, String folderName) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete Folder?'),
+        content: Text('Are you sure you want to delete "$folderName"? Presets in this folder will be moved to Uncategorized.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              ref.read(foldersProvider.notifier).deleteFolder(folderId);
+              Navigator.pop(dialogContext);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Deleted folder "$folderName"')),
+              );
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 /// A collapsible category section
@@ -170,6 +372,8 @@ class _CategorySection extends ConsumerWidget {
   final Color color;
   final List<Preset> presets;
   final void Function(Preset) onPresetTap;
+  final String? folderId; // If set, this is a user folder that can be renamed
+  final void Function(String folderId, String currentName)? onRename;
 
   const _CategorySection({
     required this.id,
@@ -178,6 +382,8 @@ class _CategorySection extends ConsumerWidget {
     required this.color,
     required this.presets,
     required this.onPresetTap,
+    this.folderId,
+    this.onRename,
   });
 
   @override
@@ -185,53 +391,67 @@ class _CategorySection extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final isExpanded = ref.watch(_sectionExpandedProvider(id));
+    final canRename = folderId != null && onRename != null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Section header
-        InkWell(
-          onTap: () => ref.read(_sectionExpandedProvider(id).notifier).state = !isExpanded,
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
-            child: Row(
-              children: [
-                AnimatedRotation(
-                  duration: const Duration(milliseconds: 200),
-                  turns: isExpanded ? 0.25 : 0,
-                  child: Icon(
-                    Icons.chevron_right,
-                    color: isDark ? Colors.white54 : Colors.black45,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(emoji, style: const TextStyle(fontSize: 20)),
-                const SizedBox(width: 10),
-                Text(
-                  title,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white : Colors.black87,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    '${presets.length}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: color,
+        GestureDetector(
+          onLongPress: canRename ? () => onRename!(folderId!, title) : null,
+          child: InkWell(
+            onTap: () => ref.read(_sectionExpandedProvider(id).notifier).state = !isExpanded,
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+              child: Row(
+                children: [
+                  AnimatedRotation(
+                    duration: const Duration(milliseconds: 200),
+                    turns: isExpanded ? 0.25 : 0,
+                    child: Icon(
+                      Icons.chevron_right,
+                      color: isDark ? Colors.white54 : Colors.black45,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Text(emoji, style: const TextStyle(fontSize: 20)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? Colors.white : Colors.black87,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      '${presets.length}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: color,
+                      ),
+                    ),
+                  ),
+                  if (canRename) ...[
+                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.more_horiz,
+                      size: 16,
+                      color: isDark ? Colors.white38 : Colors.black26,
+                    ),
+                  ],
+                ],
+              ),
             ),
           ),
         ),
